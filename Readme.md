@@ -6,7 +6,7 @@
 
 **VideoLLaMA2-7B** model, refer to its official HuggingFace page for details:
 
-- [VideoLLaMA2-7B @ HuggingFace](https://huggingface.co/VideoLLaMA/VideoLLaMA2-7b)
+- [VideoLLaMA2-7B @ HuggingFace](https://huggingface.co/DAMO-NLP-SG/VideoLLaMA2-7B)
 
 ---
 
