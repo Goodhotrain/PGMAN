@@ -1,4 +1,4 @@
-# PGMAN: Prompt-Guided Multimodal Alignment Network
+# PGMAN: Cues to Semantics: Prompt-Guided Multimodal Alignment for Micro-video Emotion Recognition
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.10%2B-ee4c2c.svg)](https://pytorch.org/)
