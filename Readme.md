@@ -13,7 +13,6 @@ This repository contains the official implementation of **PGMAN**.
 - **Dataset Annotations:** Released processed annotation files for the ME-5 dataset (emotion-annotated MTSVRC) to support reproducibility and further research.
 - **New Baselines:** Added experimental comparisons with recent methods.
 
-
 ---
 
 ## 🛠️ Preparation

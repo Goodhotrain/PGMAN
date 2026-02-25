@@ -160,7 +160,7 @@ def parse_opts():
                  ),
             dict(name='--dataset',
                  type=str,
-                 default='ek6',
+                 default='ME5',
                  ),
             dict(name='--debug',
                  default=True,
