@@ -11,7 +11,7 @@ import re
 import random
 from models.Align import MultimodalAlignNet, ContrastiveAligner
 
-
+ 
 def pre_caption(caption, max_words):
     caption = re.sub(
         r"([,.'!?\"()*#:;~])",

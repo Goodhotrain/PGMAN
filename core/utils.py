@@ -4,7 +4,7 @@ import shutil
 import torch.nn as nn
 from transforms.spatial import processing
 from sklearn.metrics import f1_score
-
+ 
 def local2global_path(opt):
     if opt.root_path != '':
         # if opt.debug:

@@ -1,5 +1,6 @@
 import argparse
 
+
 def parse_opts():
     parser = argparse.ArgumentParser()
     arguments = {
@@ -11,7 +12,7 @@ def parse_opts():
         ],
         'paths': [
             dict(name='--root_path',
-                 default="/media/Harddisk/ghy/Mycode_e8",
+                 default="/media/Harddisk/Mycode_e8",
                  type=str,
                  help='Global path of root directory'),
             dict(name="--video_path",
@@ -23,11 +24,11 @@ def parse_opts():
                  type=str,
                  help='Global path of audios', ),
             dict(name="--text_path",
-                 default='/media/Harddisk/ghy/Mycode_e8/preprocess/e8_title.json',                                                                
+                 default='/media/Harddisk/Mycode_e8/preprocess/e8_title.json',                                                                
                  type=str,
                  help='Global path of title json file'),
             dict(name="--annotation_path",
-                 default='/media/Harddisk/ghy/Mycode_e8/preprocess/em8.json',
+                 default='/media/Harddisk/Mycode_e8/preprocess/em8.json',
                  type=str,
                  help='Global path of annotation file'),
             dict(name="--result_path",

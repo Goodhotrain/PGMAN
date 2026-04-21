@@ -11,7 +11,7 @@ def train_epoch(e, data_loader, model, criterion, optimizer, opt, class_names, w
     losses = AverageMeter()
     accuracies = AverageMeter()
     end_time = time.time()
-
+ 
     for i, data_item in enumerate(data_loader):
         visual, target, audio, text, batch_size = process_data_item(opt, data_item)
         data_time.update(time.time() - end_time)

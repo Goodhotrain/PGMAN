@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+ 
 class TSNAudio(object):
     def __init__(self, n_frames=8, center=False):
         self.n_frames = n_frames

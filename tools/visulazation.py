@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from torchvision.utils import draw_bounding_boxes
 
-
+ 
 def plot(imgs):
     if not isinstance(imgs[0], list):
         # Make a 2d grid even if there's just 1 row

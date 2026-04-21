@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import KFold
 import numpy as np
 import json
-
+ 
 def modify_json(json_path, train_idx, valid_idx):
 
     with open(json_path, 'r') as f:

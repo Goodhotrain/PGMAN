@@ -4,6 +4,7 @@ import torch
 from core.utils import AverageMeter, process_data_item, run_model, calculate_accuracy, compute_wa_f1
 from tools.model import choose_save_checkpoint
 
+
 def val_epoch(e, data_loader, model, criterion, opt, writer, optimizer):
     k, epoch, valid_acc = e
     print("# ---------------------------------------------------------------------- #")

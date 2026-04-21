@@ -1,6 +1,6 @@
 from torch.optim import Adam, SGD
 
-
+ 
 def get_optim(opt, parameters, model='adam'):
     if model == 'adam':
         optimizer = Adam(filter(lambda p: p.requires_grad, parameters),
