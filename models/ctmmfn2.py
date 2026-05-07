@@ -12,7 +12,8 @@ import random
 from models.Align import MultimodalAlignNet, ContrastiveAligner
 from einops import rearrange
 from tools.model import freeze
- 
+
+
 def pre_caption(caption, max_words):
     caption = re.sub(
         r"([,.'!?\"()*#:;~])",

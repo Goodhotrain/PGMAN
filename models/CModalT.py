@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from einops import rearrange
 from models.vit_utils import DropPath, trunc_normal_
 
-
 class CrossAttention(nn.Module):
     def __init__(self, dim, heads=8, dim_head=96):
         super().__init__()

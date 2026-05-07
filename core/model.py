@@ -16,10 +16,9 @@ def generate_model(opt, k_fold:int):
     # if opt.mode == 'pretrain' and opt.visual_pretrained:
     #    load_visual_pretrained(model, opt.visual_pretrained)
     # # load_visual_pretrained(model, opt.visual_pretrained)
-
     
     # load_align_pretrained(model, k_fold, model_file='/media/Harddisk/ghy/Mycode_e8/results/debug2/result_20240428_210721/checkpoints/1_40model_state.pth')
-    load_align_pretrained(model, k_fold, model_file='/media/Harddisk/ghy/Mycode_e8/results/debug2/result_20240706_171409/checkpoints/1_10model_state.pth')
+    load_align_pretrained(model, k_fold, model_file='./Mycode_e8/results/debug2/result_20240706_171409/checkpoints/1_10model_state.pth')
     # load_visual_pretrained(model, opt.visual_pretrained)
     model = model.cuda()
     return model, model.parameters()
