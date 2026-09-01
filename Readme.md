@@ -64,9 +64,6 @@ The expected data layout is:
 └── results/
 ```
 
-Pretrained PGMAN weights for ME-5 are available from the
-[checkpoint download](https://drive.google.com/file/d/1QqrIdo3CJcIMNXuMbE9Fu8_veRWQQ3DH/view?usp=sharing).
-
 ## Running
 
 Show all options:
