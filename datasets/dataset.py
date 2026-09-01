@@ -17,14 +17,14 @@ def get_ek6(opt, subset, transforms):
                       need_audio= opt.need_audio)
 
 def get_training_set(opt, spatial_transform, temporal_transform, target_transform, audio_transform):
-    if opt.dataset == 'ek6':
+    if opt.dataset.lower() in {'ek6', 'me5'}:
         transforms = [spatial_transform, temporal_transform, target_transform, audio_transform]
         return get_ek6(opt, 'train', transforms)
     else:
         raise Exception
 
 def get_validation_set(opt, spatial_transform, temporal_transform, target_transform, audio_transform):
-    if opt.dataset == 'ek6':
+    if opt.dataset.lower() in {'ek6', 'me5'}:
         transforms = [spatial_transform, temporal_transform, target_transform, audio_transform]
         return get_ek6(opt, 'test', transforms)
     else:
@@ -32,7 +32,7 @@ def get_validation_set(opt, spatial_transform, temporal_transform, target_transf
 
 
 def get_test_set(opt, spatial_transform, temporal_transform, target_transform, audio_transform):
-    if opt.dataset == 'ek6':
+    if opt.dataset.lower() in {'ek6', 'me5'}:
         transforms = [spatial_transform, temporal_transform, target_transform, audio_transform]
         return get_ek6(opt, 'test', transforms)
     else:

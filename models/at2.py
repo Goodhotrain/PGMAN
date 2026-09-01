@@ -146,6 +146,7 @@ class AudioTransformer(nn.Module):
     def forward(self, x, MFCC=False):
         waveform1, sample_rate = preprocess_audio(x)
         with torch.no_grad():
+            waveform = waveform1
             if sample_rate != self.processor.feature_extractor.sampling_rate:
                 resampler = torchaudio.transforms.Resample(orig_freq=44100, new_freq=self.processor.feature_extractor.sampling_rate)
                 waveform = resampler(waveform1)

@@ -1,145 +1,49 @@
+"""Command-line options for PGMAN training and evaluation."""
+
 import argparse
 
 
-def parse_opts():
-    parser = argparse.ArgumentParser()
-    arguments = {
-        'coefficients': [
-            dict(name='--lambda_0',
-                 default='0.5',
-                 type=float,
-                 help='Penalty Coefficient that Controls the Penalty Extent in PCCE'),
-        ],
-        'paths': [
-            dict(name='--root_path',
-                 default="/media/Harddisk/Mycode_e8",
-                 type=str,
-                 help='Global path of root directory'),
-            dict(name="--video_path",
-                 default="/media/Harddisk/Datasets/Micro_Video/MeiTu/video/",
-                 type=str,
-                 help='Global path of videos', ),
-            dict(name="--audio_path",
-                 default="/media/Harddisk/Datasets/Micro_Video/MeiTu/audio/",
-                 type=str,
-                 help='Global path of audios', ),
-            dict(name="--text_path",
-                 default='/media/Harddisk/Mycode_e8/preprocess/e8_title.json',                                                                
-                 type=str,
-                 help='Global path of title json file'),
-            dict(name="--annotation_path",
-                 default='/media/Harddisk/Mycode_e8/preprocess/em8.json',
-                 type=str,
-                 help='Global path of annotation file'),
-            dict(name="--result_path",
-                 default='results',
-                 type=str,
-                 help="Local path of result directory"),
-            dict(name='--expr_name',
-                 type=str,
-                 default=''),
-        ],
-        'core': [
-            dict(name='--batch_size',
-                 default=8,
-                 type=int,
-                 help='Batch Size'),
-            dict(name='--sample_size',
-                 default=224,
-                 type=int,
-                 help='Heights and width of inputs'),
-            dict(name='--n_classes',
-                 default=8,
-                 type=int,
-                 help='Number of classes'),
-            dict(name='--n_frames',
-                 default=8,
-                 type=int),
-            dict(name='--loss_func',
-                 default='ce',
-                 type=str,
-                 help='ce | pcce_ve8'),
-            dict(name='--learning_rate',
-                 default=1e-1,
-                 type=float,
-                 help='Initial learning rate',),
-            dict(name='--weight_decay',
-                 default=0.0001,
-                 type=float,
-                 help='Weight Decay'),
-            dict(name='--fps',
-                 default=30,
-                 type=int,
-                 help='fps'),
-            dict(name='--mode',
-                 default='main',
-                 type=str,
-                 help='choose pretrain or main or visual pretrain'),
-        ],
-        'network': [
-            {
-                'name': '--audio_embed_size',
-                'default': 256,
-                'type': int,
-            },
-            {
-                'name': '--audio_n_segments',
-                'default': 8,
-                'type': int,
-            }
-        ],
+def parse_opts(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Train PGMAN for multimodal micro-video emotion recognition"
+    )
 
-        'common': [
-            dict(name='--need_audio',
-                 type=bool,
-                 default=True,
-                 ),
-            dict(name='--need_text',
-                 type=bool,
-                 default=True,
-                 ),
-            dict(name='--dataset',
-                 type=str,
-                 default='ek6',
-                 ),
-            dict(name='--debug',
-                 default=True,
-                 action='store_true'),
-            dict(name='--dl',
-                 action='store_true',
-                 default=False,
-                 help='drop last'),
-            dict(
-                name='--n_threads',
-                default = 8,
-                type=int,
-                help='Number of threads for multi-thread loading',
-            ),
-            dict(
-                name='--n_epochs',
-                default=100,
-                type=int,
-                help='Number of total epochs to run',
-            ),
-            dict(
-                name='--pretrained',
-                default='',
-                type=str,
-                help='directory of pretrained model',
-            ),
-            dict(
-                name='--visual_pretrained',
-                default='',
-                type=str,
-                help='directory of pretrained TimeSformer model',
-            ),
-        ]
-    }
-    for group in arguments.values():
-        for argument in group:
-            name = argument['name']
-            del argument['name']
-            parser.add_argument(name, **argument)
+    paths = parser.add_argument_group("paths")
+    paths.add_argument("--root_path", required=True, help="Dataset/project root")
+    paths.add_argument("--video_path", default="MeiTu/video")
+    paths.add_argument("--audio_path", default="MeiTu/audio")
+    paths.add_argument("--text_path", default="annotations/mtsvrc_title.json")
+    paths.add_argument("--annotation_path", default="annotations/mtsvrc_title.json")
+    paths.add_argument("--fold_csv", default="annotations/mtsvrc.csv")
+    paths.add_argument("--result_paths", default="results/main")
+    paths.add_argument("--expr_name", default="")
+    paths.add_argument("--pretrained", default="", help="Training checkpoint")
+    paths.add_argument("--visual_pretrained", default="", help="TimeSformer checkpoint")
 
-    args = parser.parse_args([])
-    return args
+    data = parser.add_argument_group("data")
+    data.add_argument("--dataset", default="ME5", choices=("ME5", "ek6"))
+    data.add_argument("--batch_size", default=8, type=int)
+    data.add_argument("--sample_size", default=224, type=int)
+    data.add_argument("--n_frames", default=8, type=int)
+    data.add_argument("--fps", default=30, type=int)
+    data.add_argument("--n_threads", default=8, type=int)
+    data.add_argument("--drop_last", dest="dl", action="store_true")
+
+    model = parser.add_argument_group("model")
+    model.add_argument("--n_classes", default=5, type=int)
+    model.add_argument("--audio_embed_size", default=256, type=int)
+    model.add_argument("--audio_n_segments", default=8, type=int)
+    model.add_argument("--need_audio", action=argparse.BooleanOptionalAction, default=True)
+    model.add_argument("--need_text", action=argparse.BooleanOptionalAction, default=True)
+
+    training = parser.add_argument_group("training")
+    training.add_argument("--mode", default="main", choices=("pretrain", "main"))
+    training.add_argument("--loss_func", default="ce", choices=("ce", "pcce_ve8"))
+    training.add_argument("--lambda_0", default=0.5, type=float)
+    training.add_argument("--learning_rate", default=1e-5, type=float)
+    training.add_argument("--weight_decay", default=1e-4, type=float)
+    training.add_argument("--n_epochs", default=200, type=int)
+    training.add_argument("--seed", default=99, type=int)
+    training.add_argument("--debug", action="store_true")
+
+    return parser.parse_args(argv)

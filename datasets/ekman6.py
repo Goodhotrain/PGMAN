@@ -77,16 +77,18 @@ def get_video_names_and_annotations(video_path, audio_path, data, subset):
     audio_paths = []
     annotations = []
     text = []
-    a_path = '/media/Harddisk/Datasets/Micro_Video/MeiTu/audio/'
     id = []
     for key, value in data.items():
         # label = value['annotations']['label']
         # video_names.append('{}/{}'.format(label, key))
         if value['subset'] == subset:
             # v_p = os.path.join(video_path, value['id'])
-            video_paths.append(value['video_path'])
+            resolved_video_path = value['video_path']
+            if not os.path.isabs(resolved_video_path):
+                resolved_video_path = os.path.join(video_path, resolved_video_path)
+            video_paths.append(resolved_video_path)
             v_name = os.path.splitext(value['video_path'])[0].split('/')[-1]
-            audio_paths.append(os.path.join(a_path, v_name+'.mp3'))
+            audio_paths.append(os.path.join(audio_path, v_name + '.mp3'))
             text.append(value['title'])
             annotations.append(value['emotion'])
             id.append(key)
@@ -240,4 +242,3 @@ def make_dataset(video_path, audio_path, text_path,annotation_path, subset):
         }
         dataset.append(sample)
     return dataset
-

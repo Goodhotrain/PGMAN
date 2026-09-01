@@ -1,76 +1,109 @@
-# PGMAN: Cues to Semantics: Prompt-Guided Multimodal Alignment for Micro-video Emotion Recognition
+# PGMAN
+
+**Cues to Semantics: Prompt-Guided Multimodal Alignment for Micro-video Emotion Recognition**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.10%2B-ee4c2c.svg)](https://pytorch.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c.svg)](https://pytorch.org/)
 
-This repository contains the official implementation of **PGMAN**.
+PGMAN combines visual, audio, and caption cues for micro-video emotion
+recognition. Video captions are generated offline with VideoLLaMA2-7B and
+cached as JSON annotations, so training and cached-caption inference do not
+need to keep the captioning model in memory.
 
----
+## Method overview
 
-## 📢 News
+The current pipeline contains four main parts:
 
-- **Model Checkpoints:** Released model checkpoints for inference and evaluation, facilitating reproducibility and qualitative analysis.
-- **Dataset Annotations:** Released processed annotation files for the ME-5 dataset (emotion-annotated MTSVRC) to support reproducibility and further research.
-- **New Baselines:** Added experimental comparisons with recent methods.
+1. a divided space-time transformer and a frame-level ViT for visual cues;
+2. a Wav2Vec2-based audio encoder and BERT caption encoder;
+3. **DecAlign**, which decomposes multimodal alignment into visual-text,
+   visual-audio, and text-audio contrastive objectives;
+4. cross-modal attention, bottleneck fusion, and an emotion classifier.
 
----
+`models/decalign.py` contains the standalone DecAlign implementation. Pairwise
+losses can be returned separately or reweighted through `pair_weights`, which
+makes alignment ablations easier to reproduce.
 
-## 🛠️ Preparation
+## Repository layout
 
-### Model Weights
+```text
+.
+├── main.py                 # Training entry point
+├── opts.py                 # Command-line configuration
+├── models/
+│   ├── pgman.py            # Full PGMAN model
+│   ├── decalign.py         # Decomposed multimodal alignment
+│   ├── vit.py              # Visual encoders
+│   ├── at2.py              # Audio encoder
+│   └── mbt_fusion.py       # Bottleneck fusion
+├── datasets/               # Dataset and DataLoader definitions
+├── transforms/             # Video/audio preprocessing
+├── core/                   # Loss, optimizer, and runtime helpers
+├── train.py
+└── validation.py
+```
 
-Our method relies on **VideoLLaMA2-7B**.  
-Please download the pre-trained weights from the official HuggingFace page:
+## Preparation
 
-- https://huggingface.co/DAMO-NLP-SG/VideoLLaMA2-7B
+The caption annotations used by PGMAN are produced with
+[VideoLLaMA2-7B](https://huggingface.co/DAMO-NLP-SG/VideoLLaMA2-7B). Caption
+generation is an offline preprocessing step; `main.py` reads the cached JSON
+file directly.
 
----
-## 🔓 Model Weights
-
-To facilitate evaluation and qualitative analysis, we provide pre-trained model weights
-of **PGMAN** for inference and demonstration purposes.
-
-- The released checkpoint correspond to the models used in the revised experiments.
-- These weights are intended for **inference and reproducibility of reported results**, rather than full training from scratch.
-- Due to computational and licensing constraints of the backbone model, we do not release all intermediate training checkpoints.
-
-[Download links (ME-5)](https://drive.google.com/file/d/1QqrIdo3CJcIMNXuMbE9Fu8_veRWQQ3DH/view?usp=sharing)
-## 📁 Data Structure
-
-Please organize your data directory (specified via `--root_path`) as follows:
+The expected data layout is:
 
 ```text
 <root_path>/
 ├── MeiTu/
-│   ├── video/              # Raw video files
-│   └── audio/              # Extracted audio files
+│   ├── video/
+│   └── audio/
 ├── annotations/
-│   ├── mtsvrc_title.json   # Caption or title annotations
-│   └── mtsvrc_label.json   # Emotion labels
+│   ├── mtsvrc_title.json
+│   ├── mtsvrc_label.json
+│   └── mtsvrc.csv
 └── results/
-    └── main/               # Logs and checkpoints
-
-## Running Instructions
-
-You can train and evaluate the model quickly with the following command:
-
-```bash
-$ python main.py
 ```
 
-## 📊 Datasets
+Pretrained PGMAN weights for ME-5 are available from the
+[checkpoint download](https://drive.google.com/file/d/1QqrIdo3CJcIMNXuMbE9Fu8_veRWQQ3DH/view?usp=sharing).
 
-The experiments in this work are conducted on the following publicly available datasets:
+## Running
 
-- **Ekman-6 (Ek-6):**  
-  https://drive.google.com/drive/folders/0B-iork9xj4brQmlYYjlsUUtVVGM
+Show all options:
 
-- **VideoEmotion-8 (EM-8):**  
-  https://drive.google.com/drive/folders/0B5peJ1MHnIWGd3pFbzMyTG5BSGs
+```bash
+python main.py --help
+```
 
-In addition, we provide the processed ME-5 **annotation files (JSON format)** used in our experiments via Google Drive:
-- **Annotation files:** https://drive.google.com/file/d/1f7c2PZ6bOVTv0YP0yVsLcFEVt806nhbg/view?usp=drive_link
+Start the default ME-5 experiment:
 
-Please note that the raw videos of MTSVRC are subject to the original dataset license and must be obtained from the official source. Our released annotation files are intended to be used in conjunction with the officially downloaded data.
+```bash
+python main.py \
+  --root_path /path/to/data \
+  --dataset ME5 \
+  --n_classes 5
+```
 
+Resume from a checkpoint:
 
+```bash
+python main.py \
+  --root_path /path/to/data \
+  --pretrained /path/to/checkpoint.pth
+```
+
+The default setup samples 8 frames at 224 × 224 resolution. Results,
+TensorBoard logs, and checkpoints are written below `results/main` inside the
+specified root directory.
+
+## Datasets
+
+Experiments use the following public datasets:
+
+- [Ekman-6](https://drive.google.com/drive/folders/0B-iork9xj4brQmlYYjlsUUtVVGM)
+- [VideoEmotion-8](https://drive.google.com/drive/folders/0B5peJ1MHnIWGd3pFbzMyTG5BSGs)
+- ME-5 (emotion-annotated MTSVRC); processed annotations are available from
+  the [annotation download](https://drive.google.com/file/d/1f7c2PZ6bOVTv0YP0yVsLcFEVt806nhbg/view?usp=drive_link)
+
+Raw MTSVRC videos remain subject to the original dataset license and are not
+redistributed by this repository.

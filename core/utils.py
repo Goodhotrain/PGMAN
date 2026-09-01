@@ -7,6 +7,10 @@ from sklearn.metrics import f1_score
  
 def local2global_path(opt):
     if opt.root_path != '':
+        for name in ('video_path', 'audio_path', 'text_path', 'annotation_path', 'fold_csv'):
+            value = getattr(opt, name)
+            if not os.path.isabs(value):
+                setattr(opt, name, os.path.join(opt.root_path, value))
         # if opt.debug:
         #     opt.result_path = "results/main"
         opt.result_path = os.path.join(opt.root_path, opt.result_paths)
@@ -28,7 +32,7 @@ def local2global_path(opt):
         if not os.path.exists(opt.ckpt_path):
             os.mkdir(opt.ckpt_path)
     else:
-        raise Exception
+        raise ValueError('root_path must be provided')
 
 
 def get_spatial_transform(opt, mode):
@@ -79,8 +83,13 @@ def run_model(opt, inputs, model, criterion, i=0, print_attention=True, period=3
         loss_c,loss_m = model(visual, audio, text)
         return loss_c,loss_m
     elif opt.mode == 'main':
-        y_pred = model(visual, audio, text)
-        loss = criterion(y_pred, target)
+        model_output = model(visual, audio, text)
+        if isinstance(model_output, tuple):
+            y_pred, alignment_loss = model_output
+        else:
+            y_pred = model_output
+            alignment_loss = y_pred.new_zeros(())
+        loss = criterion(y_pred, target) + opt.lambda_0 * alignment_loss
     return y_pred, loss
 
 def calculate_accuracy(outputs, targets):
