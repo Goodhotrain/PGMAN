@@ -45,6 +45,18 @@ makes alignment ablations easier to reproduce.
 
 ## Preparation
 
+Use Python 3.10 or newer and a CUDA-enabled PyTorch environment. The training
+pipeline imports `torchvision`, `torchaudio`, `transformers`, `einops`,
+`decord`, `numpy`, `pandas`, `scikit-learn`, `tensorboardX`, and `absl-py`.
+Install matching versions of PyTorch, torchvision, and torchaudio for your
+CUDA runtime, with an audio backend that can read MP3 files.
+
+Before training, check the pretrained encoder configuration in `models/at2.py`
+(Wav2Vec2) and `models/vit.py` (visual encoder). The audio encoder currently
+uses a local checkpoint path. BERT uses `bert-base-uncased` from Hugging Face;
+the frame encoder uses torchvision's default ViT-B/16 weights. Cache these
+downloads in advance when running offline.
+
 The caption annotations used by PGMAN are produced with
 [VideoLLaMA2-7B](https://huggingface.co/DAMO-NLP-SG/VideoLLaMA2-7B). Caption
 generation is an offline preprocessing step; `main.py` reads the cached JSON
@@ -89,9 +101,18 @@ python main.py \
   --pretrained /path/to/checkpoint.pth
 ```
 
-The default setup samples 8 frames at 224 × 224 resolution. Results,
-TensorBoard logs, and checkpoints are written below `results/main` inside the
-specified root directory.
+The default setup samples 8 frames at 224 × 224 resolution. Each run creates
+an output directory below `results/main` inside the specified root directory.
+TensorBoard logs are written to its `tensorboard/` subdirectory. Checkpoint
+saving in `validation.py` is currently commented out; the resume command
+expects an existing checkpoint containing `state_dict` and, optionally,
+`optimizer` and `epoch`.
+
+## Repository maintenance
+
+Python caches, local environments, datasets, model weights, and experiment
+outputs are excluded through `.gitignore`. Keep generated files outside
+version control when preparing changes.
 
 ## Datasets
 

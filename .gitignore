@@ -1,0 +1,23 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Local datasets, model weights, and experiment outputs
+data/
+MeiTu/
+annotations/
+results/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+events.out.tfevents.*
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
